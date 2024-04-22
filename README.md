@@ -3,7 +3,7 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/xocoee/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/xocoee/frontend-project-12/actions)
 
-[![chat logo](frontend/src/images/logo.png)]
+![chat logo](frontend/src/images/logo.png)
 
 > Live Chat, where you can talk with your friends, in room that you create for yourself, or with
 > everyone in #general
