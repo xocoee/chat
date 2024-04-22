@@ -20,7 +20,7 @@ import rollbarConfig from '../rollbar/rollbarConfig.js';
 const App = () => {
   const ruDict = filter.getDictionary('ru');
   filter.add(ruDict);
-  // throw new Error('Це тестова помилка для Rollbar');
+
   return (
     <RollbarProvider config={rollbarConfig}>
       <ErrorBoundary>
