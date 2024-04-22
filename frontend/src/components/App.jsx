@@ -14,10 +14,14 @@ import Signup from './pages/Signup.jsx';
 import Header from './ui-components/Header.jsx';
 
 import i18n from '../i18next/i18next.js';
-import rollbarConfig from '../rollbar/rollbarConfig.js';
 import socket, { ChatContext } from '../socket/socket.js';
 
 const App = () => {
+  const rollbarConfig = {
+    accessToken: 'be7e091bb5d948e89fc542a613c577cb',
+    environment: 'testenv',
+  };
+
   const ruDict = filter.getDictionary('ru');
   filter.add(ruDict);
 
