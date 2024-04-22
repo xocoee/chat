@@ -58,7 +58,7 @@ const ru = {
     },
 
     header: {
-      nameChat: 'xocoee Chat',
+      nameChat: 'Hexlet Chat',
       exit: 'Выйти',
     },
 
