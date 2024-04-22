@@ -48,7 +48,6 @@ const Message = ({ selectedChannel, chats }) => {
       try {
         await dispatch(addMessage(message));
         formik.resetForm();
-        throw new Error('Це тестова помилка для Rollbar із messages.jsx');
       } catch (error) {
         toast.error(t('toastMessage.dataLoadingError'));
       }
