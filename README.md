@@ -50,6 +50,6 @@ make start-backend
 make lint-frontend
 ```
 
-### Deploy
+### Render Deploy
 
-[Railway](https://frontend-project-12-production-4107.up.railway.app/)
+[Render](https://frontend-project-12-njkc.onrender.com)
