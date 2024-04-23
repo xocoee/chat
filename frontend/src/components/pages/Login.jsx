@@ -103,9 +103,11 @@ const Login = () => {
                       required
                     />
                     <Form.Label htmlFor="password">{t('loginPage.password')}</Form.Label>
+                    { authFailure && (
                     <Form.Control.Feedback type="invalid" tooltip>
                       {t('loginPage.noValidUsername')}
                     </Form.Control.Feedback>
+                    )}
                   </Form.Group>
                   <Button type="submit" variant="outline-primary" className="w-100 mb-3">
                     {t('loginPage.enter')}
