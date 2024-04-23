@@ -84,6 +84,7 @@ const Login = () => {
                       value={formik.values.username}
                       placeholder={t('loginPage.username')}
                       name="username"
+                      id="username"
                       autoComplete="username"
                       isInvalid={authFailure}
                       required
@@ -98,6 +99,7 @@ const Login = () => {
                       value={formik.values.password}
                       placeholder={t('loginPage.password')}
                       name="password"
+                      id="password"
                       autoComplete="current-password"
                       isInvalid={authFailure}
                       required
