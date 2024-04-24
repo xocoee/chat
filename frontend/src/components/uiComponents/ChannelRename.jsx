@@ -22,17 +22,17 @@ const ChannelRename = ({ close, channelId }) => {
   }, []);
 
   const dispatch = useDispatch();
-  const { chats } = useSelector(getChats);
-  const namesChats = chats.map((item) => item.name);
+  const { channels } = useSelector(getChats);
+  const namesChats = channels.map((item) => item.name);
 
-  const channelsSchema = (channels) => yup.object().shape({
+  const channelsSchema = (channel) => yup.object().shape({
     name: yup
       .string()
       .trim()
       .required(t('modal.shemaRequired'))
       .min(3, t('modal.shemaNameChannel'))
       .max(20, t('modal.shemaNameChannel'))
-      .notOneOf(channels, t('modal.duplicate')),
+      .notOneOf(channel, t('modal.duplicate')),
   });
 
   const formik = useFormik({
