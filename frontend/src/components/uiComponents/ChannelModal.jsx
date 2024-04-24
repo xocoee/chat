@@ -17,22 +17,22 @@ const ChannelModal = ({ closeHandler }) => {
   const { t } = useTranslation();
   const refContainer = useRef('');
   const dispatch = useDispatch();
-  const { chats } = useSelector(getChats);
+  const { channels } = useSelector(getChats);
 
-  const namesChats = chats.map((item) => item.name);
+  const namesChats = channels.map((item) => item.name);
 
   useEffect(() => {
     refContainer.current.focus();
   }, []);
 
-  const channelsSchema = (channels) => yup.object().shape({
+  const channelsSchema = (channel) => yup.object().shape({
     name: yup
       .string()
       .trim()
       .required(t('modal.shemaRequired'))
       .min(3, t('modal.shemaNameChannel'))
       .max(20, t('modal.shemaNameChannel'))
-      .notOneOf(channels, t('modal.duplicate')),
+      .notOneOf(channel, t('modal.duplicate')),
   });
 
   const formik = useFormik({

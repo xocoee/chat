@@ -12,26 +12,26 @@ import { fetchChannels } from '../../store/channelsSlice.js';
 import { fetchMessages } from '../../store/messagesSlice.js';
 import { getIsAuthorized } from '../../utils/storageUtils.js';
 
-import Message from '../ui-components/Messages.jsx';
-import ChannelModal from '../ui-components/ChannelModal.jsx';
-import { ChannelDefault, ChannelUser } from '../ui-components/ChannelItem.jsx';
+import Message from '../uiComponents/Messages.jsx';
+import ChannelModal from '../uiComponents/ChannelModal.jsx';
+import { ChannelDefault, ChannelUser } from '../uiComponents/ChannelItem.jsx';
 
 const Home = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { chats, selectedChatIndex } = useSelector(getChats);
+  const { channels, selectedChannelsIndex } = useSelector(getChats);
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [body, setBody] = useState('');
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const channelId = chats[selectedChatIndex]?.id;
+    const channelId = channels[selectedChannelsIndex]?.id;
     if (channelId) {
       setSelectedChannel(channelId);
       dispatch(fetchMessages(channelId));
     }
-  }, [chats, selectedChatIndex, dispatch]);
+  }, [channels, selectedChannelsIndex, dispatch]);
 
   useEffect(() => {
     if (!getIsAuthorized()) {
@@ -72,7 +72,7 @@ const Home = () => {
             id="channels-box"
             className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
           >
-            {chats.map((item) => (
+            {channels.map((item) => (
               !item.removable ? (
                 <ChannelDefault
                   key={item.id}
@@ -93,7 +93,7 @@ const Home = () => {
         </Col>
         <Message
           selectedChannel={selectedChannel}
-          chats={chats}
+          chats={channels}
           body={body}
           setBody={setBody}
           handleSelect={handleSelect}

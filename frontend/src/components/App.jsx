@@ -11,7 +11,7 @@ import Error from './pages/Error.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
-import Header from './ui-components/Header.jsx';
+import Header from './uiComponents/Header.jsx';
 
 import i18n from '../i18next/i18next.js';
 import socket, { ChatContext } from '../socket/socket.js';

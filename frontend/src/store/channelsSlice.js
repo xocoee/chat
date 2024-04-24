@@ -51,41 +51,41 @@ export const renameChannel = createAsyncThunk(
 );
 
 const initialState = {
-  chats: [],
-  selectedChatIndex: 0,
+  channels: [],
+  selectedChannelsIndex: 0,
 };
 
 export const channelsSlice = createSlice({
-  name: 'chats',
+  name: 'channels',
   initialState,
   reducers: {
     reset: (state) => ({
       ...state,
-      chats: [],
+      channels: [],
     }),
     setSelectedChatIndex: (state, action) => ({
       ...state,
-      selectedChatIndex: action.payload,
+      selectedChannelsIndex: action.payload,
     }),
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchChannels.fulfilled, (state, action) => ({
         ...state,
-        chats: action.payload,
+        channels: action.payload,
       }))
       .addCase(fetchChannels.rejected, (state) => ({
         ...state,
-        chats: [],
+        channels: [],
       }))
 
       .addCase(addChannels.fulfilled, (state) => ({
         ...state,
-        selectedChatIndex: state.chats.length,
+        selectedChatIndex: state.channels.length,
       }))
       .addCase(addChannels.rejected, (state) => ({
         ...state,
-        chats: [],
+        channels: [],
       }))
 
       .addCase(removeChannel.fulfilled, (state) => ({
@@ -95,8 +95,7 @@ export const channelsSlice = createSlice({
       .addCase(removeChannel.rejected, (state) => state)
 
       .addCase(renameChannel.fulfilled, (state, action) => {
-        const index = state.chats.findIndex((el) => el.id === action.payload.id);
-        console.log('index', index);
+        const index = state.channels.findIndex((el) => el.id === action.payload.id);
         return {
           ...state,
           selectedChatIndex: index,
