@@ -90,7 +90,7 @@ export const channelsSlice = createSlice({
 
       .addCase(removeChannel.fulfilled, (state) => ({
         ...state,
-        selectedChatIndex: 0,
+        selectedChannelsIndex: 0,
       }))
       .addCase(removeChannel.rejected, (state) => state)
 
@@ -98,7 +98,7 @@ export const channelsSlice = createSlice({
         const index = state.channels.findIndex((el) => el.id === action.payload.id);
         return {
           ...state,
-          selectedChatIndex: index,
+          selectedChannelsIndex: index,
         };
       })
       .addCase(renameChannel.rejected, (state) => state);
