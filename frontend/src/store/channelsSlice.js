@@ -63,7 +63,7 @@ export const channelsSlice = createSlice({
       ...state,
       channels: [],
     }),
-    setSelectedChatIndex: (state, action) => ({
+    setSelectedChannelsIndex: (state, action) => ({
       ...state,
       selectedChannelsIndex: action.payload,
     }),
@@ -81,7 +81,7 @@ export const channelsSlice = createSlice({
 
       .addCase(addChannels.fulfilled, (state) => ({
         ...state,
-        selectedChatIndex: state.channels.length,
+        selectedChannelsIndex: state.channels.length,
       }))
       .addCase(addChannels.rejected, (state) => ({
         ...state,
@@ -105,6 +105,6 @@ export const channelsSlice = createSlice({
   },
 });
 
-export const { reset, setSelectedChatIndex } = channelsSlice.actions;
+export const { reset, setSelectedChannelsIndex } = channelsSlice.actions;
 
 export default channelsSlice.reducer;
