@@ -12,7 +12,9 @@ import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import Header from './uiComponents/Header.jsx';
+import PrivateRoute from './uiComponents/PrivateRoute.jsx';
 
+import routes from '../utils/routes.js';
 import i18n from '../i18next/i18next.js';
 import socket, { ChatContext } from '../socket/socket.js';
 import rollbarConfig from '../rollbar/rollbarConfig.js';
@@ -29,12 +31,20 @@ const App = () => {
             <ChatContext.Provider value={socket}>
               <BrowserRouter>
                 <div className="d-flex flex-column h-100">
-                  <Header />
                   <Routes>
-                    <Route path="*" element={<Error />} />
-                    <Route path="/" element={<Home />} />
-                    <Route path="login" element={<Login />} />
-                    <Route path="signup" element={<Signup />} />
+                    <Route path={routes.root()} element={<Header />}>
+                      <Route
+                        index
+                        element={(
+                          <PrivateRoute>
+                            <Home />
+                          </PrivateRoute>
+                      )}
+                      />
+                      <Route path={routes.loginPage()} element={<Login />} />
+                      <Route path={routes.signupPage()} element={<Signup />} />
+                      <Route path="*" element={<Error />} />
+                    </Route>
                   </Routes>
                 </div>
               </BrowserRouter>

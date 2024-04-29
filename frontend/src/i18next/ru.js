@@ -7,11 +7,14 @@ const ru = {
     messages: {
       newMessage: 'Новое сообщение',
       messageFormPlaceholder: 'Введите сообщение...',
-      messagesOne: 'сообщение',
-      messagesFew: 'сообщения',
-      messagesMany: 'сообщений',
       send: 'Отправить',
       errorSendMessage: 'Ошибка при отправке сообщения',
+      messageCount: {
+        message_zero: '{{count}} сообщений',
+        message_one: '{{count}} сообщение',
+        message_few: '{{count}} сообщения',
+        message_many: '{{count}} сообщений',
+      },
     },
 
     channel: {
@@ -85,6 +88,10 @@ const ru = {
       dataLoadingError: 'Ошибка соединения',
       authorisationError: 'Ошибка авторизации',
       unknownError: 'Неизвестная ошибка',
+    },
+
+    spinner: {
+      title: 'Загрузка...',
     },
   },
 };

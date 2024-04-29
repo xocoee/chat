@@ -1,29 +1,31 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Outlet, Link } from 'react-router-dom';
 import {
   Navbar, Button, Container,
 } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { getIsAuthorized, removeUserData } from '../../utils/storageUtils';
+import { getCurrentUser, removeCredentials } from '../../store/authSlice';
+import routes from '../../utils/routes.js';
 
 const Header = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const token = getIsAuthorized();
+  const dispatch = useDispatch();
+  const username = useSelector(getCurrentUser);
 
-  const handleLogout = () => {
-    removeUserData();
-    navigate('/login');
-  };
+  const logOut = () => { dispatch(removeCredentials()); };
 
   return (
-    <Navbar bg="white" expand="lg" className="shadow-sm">
-      <Container>
-        <Navbar.Brand as={Link} to="/">{t('header.nameChat')}</Navbar.Brand>
-        {token && <Button onClick={handleLogout}>{t('header.exit')}</Button>}
-      </Container>
-    </Navbar>
+    <div className="d-flex flex-column h-100">
+      <Navbar bg="white" expand="lg" className="shadow-sm">
+        <Container>
+          <Navbar.Brand as={Link} to={routes.root()}>{t('header.nameChat')}</Navbar.Brand>
+          {username && <Button onClick={logOut}>{t('header.exit')}</Button>}
+        </Container>
+      </Navbar>
+      <Outlet />
+    </div>
   );
 };
 

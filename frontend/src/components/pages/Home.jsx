@@ -1,107 +1,102 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Container, Row, Col } from 'react-bootstrap';
+
+import HeaderMessage from '../uiComponents/chat/HeaderMessage';
+import ChannelList from '../uiComponents/chat/ChannelList';
+import HeaderChannel from '../uiComponents/chat/HeaderChannel';
+import MessageList from '../uiComponents/chat/MessageList';
+import MessageInput from '../uiComponents/chat/MessageInput';
+import Spinner from '../uiComponents/Spinner';
+import { getChannels } from '../../store/channelsApi';
+import { getMessages } from '../../store/messagesApi';
 import {
-  Button, Container, Row, Col,
-} from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import { PlusSquare } from 'react-bootstrap-icons';
+  setModalChannel,
+  getCurrentModalChannel,
+  setActiveChannel,
+  getCurrentActiveChannel,
+} from '../../store/uiSlice';
+import getModal from '../modals/index';
 
-import { getChats } from '../../store/chatSelector.js';
-import { fetchChannels } from '../../store/channelsSlice.js';
-import { fetchMessages } from '../../store/messagesSlice.js';
-import { getIsAuthorized } from '../../utils/storageUtils.js';
+const renderModal = (props) => {
+  const {
+    modalChannel,
+    hideModal,
+    channels,
+    activeChannel,
+  } = props;
 
-import Message from '../uiComponents/Messages.jsx';
-import ChannelModal from '../uiComponents/ChannelModal.jsx';
-import { ChannelDefault, ChannelUser } from '../uiComponents/ChannelItem.jsx';
+  if (!modalChannel.type) {
+    return null;
+  }
+
+  const nameChannels = [...channels].map((channel) => channel.name);
+
+  const Component = getModal(modalChannel.type);
+  return (
+    <Component
+      modalChannel={modalChannel}
+      onHide={hideModal}
+      nameChannels={nameChannels}
+      activeChannel={activeChannel}
+    />
+  );
+};
 
 const Home = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { channels, selectedChannelsIndex } = useSelector(getChats);
-  const [selectedChannel, setSelectedChannel] = useState(null);
-  const [body, setBody] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const modalChannel = useSelector(getCurrentModalChannel);
+  const activeChannel = useSelector(getCurrentActiveChannel);
+  const channelId = activeChannel.id;
 
-  useEffect(() => {
-    const channelId = channels[selectedChannelsIndex]?.id;
-    if (channelId) {
-      setSelectedChannel(channelId);
-      dispatch(fetchMessages(channelId));
-    }
-  }, [channels, selectedChannelsIndex, dispatch]);
+  const { data: channels, isLoading: isLoadingChannels } = getChannels();
+  const { data: messages, isLoadingMessages } = getMessages(undefined, {
+    selectFromResult: ({ data, isLoading }) => ({
+      data: data?.filter((message) => message.channelId === channelId),
+      isLoadingMessages: isLoading,
+    }),
+  });
 
-  useEffect(() => {
-    if (!getIsAuthorized()) {
-      navigate('/login');
-    }
-    dispatch(fetchChannels());
-    if (selectedChannel) {
-      dispatch(fetchMessages(selectedChannel));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, navigate]);
+  const hideModal = () => dispatch(setModalChannel({ type: null, channel: null }));
+  const showModal = (type, channel = null) => dispatch(setModalChannel({ type, channel }));
 
-  const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
+  if (isLoadingChannels || isLoadingMessages) {
+    return <Spinner />;
+  }
 
-  const handleSelect = (id) => {
-    setSelectedChannel(id);
-    dispatch(fetchMessages(id));
+  const handlerMakeActiveChannel = (channel) => {
+    dispatch(setActiveChannel(channel));
   };
 
   return (
-    <Container className="my-4 overflow-hidden rounded shadow" style={{ height: '100%' }}>
-      <Row className="h-100 bg-white d-flex flex-md-row">
-        <Col xs={4} md={2} className="border-end px-0 bg-light d-flex flex-column" style={{ height: '100%' }}>
-          <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-            <b>{t('homePage.channels')}</b>
-            <Button
-              type="button"
-              variant="group-vertical"
-              className="p-0 text-primary"
-              onClick={handleShow}
-            >
-              <PlusSquare size={20} />
-              <span className="visually-hidden">+</span>
-            </Button>
-          </div>
-          <ul
-            id="channels-box"
-            className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
-          >
-            {channels.map((item) => (
-              !item.removable ? (
-                <ChannelDefault
-                  key={item.id}
-                  item={item}
-                  selectedChannel={selectedChannel}
-                  handleSelect={handleSelect}
-                />
-              ) : (
-                <ChannelUser
-                  key={item.id}
-                  item={item}
-                  selectedChannel={selectedChannel}
-                  handleSelect={handleSelect}
-                />
-              )
-            ))}
-          </ul>
-        </Col>
-        <Message
-          selectedChannel={selectedChannel}
-          chats={channels}
-          body={body}
-          setBody={setBody}
-          handleSelect={handleSelect}
-        />
-      </Row>
-      {showModal && <ChannelModal closeHandler={handleClose} />}
-    </Container>
-
+    <>
+      <Container className="my-4 overflow-hidden rounded shadow" style={{ height: '100%' }}>
+        <Row className="h-100 bg-white d-flex flex-md-row">
+          <Col xs={4} md={2} className="border-end px-0 bg-light d-flex flex-column" style={{ height: '100%' }}>
+            <HeaderChannel showModal={showModal} />
+            <ChannelList
+              channels={channels}
+              onActive={handlerMakeActiveChannel}
+              activeId={activeChannel?.id}
+              showModal={showModal}
+            />
+          </Col>
+          <Col className="p-0 h-100">
+            <div className="d-flex flex-column h-100">
+              <HeaderMessage channelName={activeChannel?.name} countMessage={messages.length} />
+              <MessageList messages={messages} />
+              <MessageInput activeChannel={activeChannel} />
+            </div>
+          </Col>
+        </Row>
+      </Container>
+      {renderModal({
+        modalChannel,
+        hideModal,
+        channels,
+        activeChannel,
+      })}
+    </>
   );
 };
 

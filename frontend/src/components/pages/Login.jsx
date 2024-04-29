@@ -1,23 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
-  Button, Form, Col, Container, Card, Row,
+  Button, Form, Col, Container, Card, Row, FloatingLabel,
 } from 'react-bootstrap';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
-import storage from '../../services/localStorage.js';
 import loginImages from '../../images/login.jpg';
+import routes from '../../utils/routes.js';
+import { setCredentials } from '../../store/authSlice.js';
 
 const Login = () => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [authFailure, setAuthFailure] = useState(false);
-
-  const inputRef = useRef(null);
+  const [authFailed, setAuthFailed] = useState(false);
+  const inputRef = useRef();
 
   useEffect(() => {
     inputRef.current.focus();
@@ -38,25 +40,22 @@ const Login = () => {
     }),
 
     onSubmit: async (values) => {
-      setAuthFailure(false);
+      setAuthFailed(false);
 
       try {
-        const { data } = await axios.post('/api/v1/login', values);
-        storage.setUserData(data);
-        navigate('/');
+        const res = await axios.post(routes.login(), values);
+        const userData = res.data;
+        dispatch(setCredentials(userData));
+        navigate(routes.root());
       } catch (error) {
-        console.error(error);
-        if (!error.isAxiosError) {
-          toast.error(t('toastMessage.unknownError'));
+        formik.setSubmitting(false);
+        if (error.isAxiosError && error.response.status === 401) {
+          setAuthFailed(true);
+          inputRef.current.select();
           return;
         }
-
-        if (error.response?.status === 401) {
-          setAuthFailure(true);
-          inputRef.current.select();
-        } else {
-          toast.error(t('toastMessage.dataLoadingError'));
-        }
+        toast.error(t('toastMessage.dataLoadingError'));
+        throw error;
       }
     },
   });
@@ -67,61 +66,52 @@ const Login = () => {
         <Col xs={12} md={8} xxl={6}>
           <Card className="shadow-sm">
             <Card.Body className="row p-5">
-              <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
+              <Col className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                 <img
                   src={loginImages}
                   className="rounded-circle"
                   alt={t('loginPage.header')}
                 />
-              </div>
-              <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0">
+              </Col>
+              <Col xs={12} md={6} className="mt-3 mt-md-0">
                 <h1 className="text-center mb-4">{t('loginPage.enter')}</h1>
-                <fieldset disabled={formik.isSubmitting}>
-                  <Form.Group className="mb-3 form-floating">
+                <Form onSubmit={formik.handleSubmit}>
+                  <FloatingLabel className="mb-3" controlId="username" label={t('loginPage.username')}>
                     <Form.Control
                       type="text"
+                      placeholder={t('loginPage.username')}
                       onChange={formik.handleChange}
                       value={formik.values.username}
-                      placeholder={t('loginPage.username')}
-                      name="username"
-                      id="username"
-                      autoComplete="username"
-                      isInvalid={authFailure}
+                      isInvalid={authFailed}
                       required
                       ref={inputRef}
                     />
-                    <label htmlFor="username">{t('loginPage.username')}</label>
-                  </Form.Group>
-                  <Form.Group className="mb-4 form-floating">
+                  </FloatingLabel>
+
+                  <FloatingLabel className="mb-4" controlId="password" label={t('loginPage.password')}>
                     <Form.Control
                       type="password"
+                      placeholder={t('loginPage.password')}
                       onChange={formik.handleChange}
                       value={formik.values.password}
-                      placeholder={t('loginPage.password')}
-                      name="password"
-                      id="password"
-                      autoComplete="current-password"
-                      isInvalid={authFailure}
+                      isInvalid={authFailed}
                       required
                     />
-                    <Form.Label htmlFor="password">{t('loginPage.password')}</Form.Label>
-                    { authFailure && (
                     <Form.Control.Feedback type="invalid" tooltip>
                       {t('loginPage.noValidUsername')}
                     </Form.Control.Feedback>
-                    )}
-                  </Form.Group>
+                  </FloatingLabel>
                   <Button type="submit" variant="outline-primary" className="w-100 mb-3">
                     {t('loginPage.enter')}
                   </Button>
-                </fieldset>
-              </Form>
+                </Form>
+              </Col>
             </Card.Body>
             <Card.Footer className="p-4">
               <div className="text-center">
                 <span>{t('loginPage.notAccount')}</span>
                 {' '}
-                <NavLink to="/signup">{t('loginPage.signup')}</NavLink>
+                <Link to={routes.signupPage()}>{t('loginPage.signup')}</Link>
               </div>
             </Card.Footer>
           </Card>

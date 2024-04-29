@@ -1,9 +1,10 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import errorImages from '../../images/notFound.jpg';
+import routes from '../../utils/routes.js';
 
 const Error = () => {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ const Error = () => {
       <h5>
         {t('errorPage.errorNavigate')}
         {' '}
-        <NavLink to="/">{t('errorPage.homePage')}</NavLink>
+        <Link to={routes.root()}>{t('errorPage.homePage')}</Link>
       </h5>
     </Alert>
   );

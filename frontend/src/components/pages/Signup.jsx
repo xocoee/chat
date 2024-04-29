@@ -1,81 +1,137 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useFormik } from 'formik';
+import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { Formik } from 'formik';
 import axios from 'axios';
 import {
-  Button, Form, Col, Container, Card, Row, FormLabel,
+  Button, Form, Col, Container, Card, Row, FloatingLabel,
 } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
-import signupImages from '../../images/signup.jpg';
 
-import storage from '../../services/localStorage';
+import signupImages from '../../images/signup.jpg';
+import routes from '../../utils/routes.js';
+import { setCredentials } from '../../store/authSlice';
 
 const Signup = () => {
   const { t } = useTranslation();
-  const [registrationFailed, setRegistrationFailed] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const inputRef = useRef();
 
-  const inputRef = useRef(null);
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+  const onSubmitSignUp = async ({ username, password }, props) => {
+    const { setErrors, setSubmitting } = props;
 
-  const validationSchema = () => yup.object().shape({
+    try {
+      const res = await axios.post(routes.createNewUser(), { username, password });
+      const userData = res.data;
+      dispatch(setCredentials(userData));
+      navigate(routes.root());
+    } catch (err) {
+      setSubmitting(false);
+      if (err.isAxiosError && err.response.status === 409) {
+        setErrors({ username: t('signupPage.repeatUser') });
+        inputRef.current.select();
+        return;
+      }
+      toast.error(t('toastMessage.dataLoadingError'));
+      throw err;
+    }
+  };
+
+  const validationSchema = yup.object().shape({
     username: yup
       .string()
-      .trim()
       .required(t('signupPage.shemaRequired'))
       .min(3, t('signupPage.shemaUsername'))
       .max(20, t('signupPage.shemaUsername')),
     password: yup
       .string()
-      .trim()
       .required(t('signupPage.shemaRequired'))
       .min(6, t('signupPage.shemaPassword')),
     confirmPassword: yup
       .string()
-      .test(
-        'confirmPassword',
-        t('signupPage.shemaConfirmPassword'),
-        (password, context) => password === context.parent.password,
-      ),
+      .oneOf([yup.ref('password'), null], t('signupPage.shemaConfirmPassword'))
+      .required(t('signupPage.shemaRequired')),
   });
 
-  const formik = useFormik({
-    initialValues: {
-      username: '',
-      password: '',
-      confirmPassword: '',
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      setRegistrationFailed(false);
+  const getFormikForm = () => (
+    <Formik
+      validationSchema={validationSchema}
+      onSubmit={onSubmitSignUp}
+      initialValues={{ username: '', password: '', confirmPassword: '' }}
+      validateOnChange={false}
+      validateOnBlur
+    >
+      {({
+        handleSubmit,
+        handleChange,
+        handleBlur,
+        values,
+        errors,
+        touched,
+        isSubmitting,
+      }) => (
+        <Form className="w-50" onSubmit={handleSubmit}>
+          <h1 className="text-center mb-4">{t('signupPage.signup')}</h1>
 
-      try {
-        const { username, password } = values;
-        const { data } = await axios.post('/api/v1/signup', { username, password });
-        storage.setUserData(data);
-        navigate('/');
-      } catch (error) {
-        if (!error.isAxiosError) {
-          throw error;
-        }
+          <FloatingLabel className="mb-3" controlId="username" label={t('signupPage.username')}>
+            <Form.Control
+              type="text"
+              placeholder={t('signupPage.username')}
+              value={values.username}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              isInvalid={touched.username && !!errors.username}
+              ref={inputRef}
+              required
+              autoFocus
+            />
+            <Form.Control.Feedback type="invalid" tooltip>
+              {touched.username && errors.username}
+            </Form.Control.Feedback>
+          </FloatingLabel>
 
-        if (error.response && error.response.status === 409) {
-          setRegistrationFailed(true);
-          inputRef.current.select();
-          return;
-        }
+          <FloatingLabel className="mb-3" controlId="password" label={t('signupPage.password')}>
+            <Form.Control
+              type="password"
+              placeholder={t('signupPage.password')}
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              isInvalid={touched.password && !!errors.password}
+              required
+            />
+            <Form.Control.Feedback type="invalid" tooltip>
+              {touched.password && errors.password}
+            </Form.Control.Feedback>
+          </FloatingLabel>
 
-        throw error;
-      }
-    },
-  });
+          <FloatingLabel className="mb-3" controlId="confirmPassword" label={t('signupPage.confirmPassword')}>
+            <Form.Control
+              type="password"
+              placeholder={t('signupPage.confirmPassword')}
+              value={values.confirmPassword}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              isInvalid={touched.confirmPassword && !!errors.confirmPassword}
+              required
+            />
+            <Form.Control.Feedback type="invalid" tooltip>
+              {touched.confirmPassword && errors.confirmPassword}
+            </Form.Control.Feedback>
+          </FloatingLabel>
+
+          <Button variant="outline-primary" type="submit" disabled={isSubmitting} className="w-100">{t('signupPage.registration')}</Button>
+        </Form>
+      )}
+    </Formik>
+  );
 
   return (
     <Container fluid className="h-100">
-      <Row className="justify-content-center align-items-center h-100">
+      <Row className="justify-content-center align-content-center h-100">
         <Col xs={12} md={8} xxl={6}>
           <Card className="shadow-sm">
             <Card.Body className="d-flex flex-column flex-md-row justify-content-around align-items-center p-5">
@@ -86,90 +142,12 @@ const Signup = () => {
                   alt={t('signupPage.header')}
                 />
               </div>
-              <Form onSubmit={formik.handleSubmit} className="w-50">
-                <h1 className="text-center mb-4">{t('signupPage.signup')}</h1>
-                <Form.Group className="form-floating mb-3">
-                  <Form.Control
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.username}
-                    placeholder={t('signupPage.shemaUsername')}
-                    name="username"
-                    id="username"
-                    autoComplete="username"
-                    isInvalid={
-                      (formik.errors.username && formik.touched.username)
-                      || registrationFailed
-                    }
-                    required
-                    ref={inputRef}
-                  />
-                  <FormLabel htmlFor="username">
-                    {t('signupPage.username')}
-                    {' '}
-                  </FormLabel>
-                  <Form.Control.Feedback type="invalid" tooltip placement="right">
-                    {formik.errors.username || null}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group className="form-floating mb-3">
-                  <Form.Control
-                    type="password"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.password}
-                    placeholder={t('signupPage.shemaPassword')}
-                    name="password"
-                    autoComplete="new-password"
-                    id="password"
-                    isInvalid={
-                      (formik.errors.password && formik.touched.password)
-                      || registrationFailed
-                    }
-                    required
-                  />
-                  <Form.Control.Feedback type="invalid" tooltip>
-                    {formik.errors.password || null}
-                  </Form.Control.Feedback>
-                  <Form.Label htmlFor="password">{t('signupPage.password')}</Form.Label>
-                </Form.Group>
-                <Form.Group className="form-floating mb-3">
-                  <Form.Control
-                    type="password"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.confirmPassword}
-                    placeholder={t('signupPage.shemaConfirmPassword')}
-                    name="confirmPassword"
-                    autoComplete="new-password"
-                    id="confirmPassword"
-                    isInvalid={
-                      (formik.errors.confirmPassword && formik.touched.confirmPassword)
-                      || registrationFailed
-                    }
-                    required
-                  />
-                  <Form.Control.Feedback type="invalid" tooltip>
-                    {registrationFailed
-                      ? t('signupPage.repeatUser')
-                      : formik.errors.confirmPassword}
-                  </Form.Control.Feedback>
-                  <Form.Label htmlFor="confirmPassword">{t('signupPage.confirmPassword')}</Form.Label>
-                </Form.Group>
-                <Button
-                  type="submit"
-                  variant="outline-primary"
-                  className="w-100"
-                >
-                  {t('signupPage.registration')}
-                </Button>
-              </Form>
+              {getFormikForm()}
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </Container>
-
   );
 };
 
