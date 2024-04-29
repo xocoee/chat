@@ -77,6 +77,7 @@ const RenameChannel = (props) => {
                     type="text"
                     ref={inputRef}
                     required
+                    id="name"
                     name="name"
                     value={values.name}
                     onChange={handleChange}
