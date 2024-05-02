@@ -8,7 +8,7 @@
 > Live Chat, where you can talk with your friends, in room that you create for yourself, or with
 > everyone in #general
 
-### Demonstration: [Click](https://frontend-project-12-njkc.onrender.com)
+### Demonstration: [click](https://frontend-project-12-njkc.onrender.com)
 ![Screenshot](https://drive.google.com/file/d/1Z3zvsIlS8VR69y6BAnkmr86IzI69PqLo/view?usp=drive_link)
 
 ### Features
