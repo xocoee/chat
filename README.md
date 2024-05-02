@@ -3,11 +3,13 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/xocoee/frontend-project-12/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/xocoee/frontend-project-12/actions)
 
-### Demonstration:
-![Screenshot](screenChat.png)
+## About
 
 > Live Chat, where you can talk with your friends, in room that you create for yourself, or with
 > everyone in #general
+
+### Demonstration: [Click](https://frontend-project-12-njkc.onrender.com)
+![Screenshot](https://drive.google.com/file/d/1Z3zvsIlS8VR69y6BAnkmr86IzI69PqLo/view?usp=drive_link)
 
 ### Features
 
@@ -50,7 +52,3 @@ make start-backend
 ```sh
 make lint-frontend
 ```
-
-### Render Deploy
-
-[Render](https://frontend-project-12-njkc.onrender.com)
