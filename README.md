@@ -9,7 +9,7 @@
 > everyone in #general
 
 ### Demonstration: [click](https://frontend-project-12-njkc.onrender.com)
-![Screenshot](https://drive.google.com/file/d/1Z3zvsIlS8VR69y6BAnkmr86IzI69PqLo/view?usp=drive_link)
+![Screenshot](https://drive.google.com/file/d/1Z3zvsIlS8VR69y6BAnkmr86IzI69PqLo/preview)
 
 ### Features
 
