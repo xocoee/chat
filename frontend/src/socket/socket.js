@@ -12,45 +12,43 @@ import {
 
 export const ChatContext = createContext(null);
 
-const initializeSocket = () => {
-  const socket = io();
+const socket = io();
 
-  const listenerAddChannel = (event) => {
-    store.dispatch(channelsApi.util.updateQueryData('getChannels', undefined, (draft) => {
-      draft.push(event);
-    }));
-  };
-
-  const listenerDeleteChannel = (event) => {
-    store.dispatch(channelsApi.util.updateQueryData('getChannels', undefined, (draft) => {
-      const index = draft.findIndex((item) => item.id === event.id);
-      if (index !== -1) { draft.splice(index, 1); }
-      const activeChannel = getCurrentActiveChannel(store.getState());
-      if (event.id === activeChannel.id) {
-        const defaultChannel = getCurrentDefaultChannel(store.getState());
-        store.dispatch(setActiveChannel(defaultChannel));
-      }
-    }));
-  };
-
-  const listenerEditChannel = (event) => {
-    store.dispatch(channelsApi.util.updateQueryData('getChannels', undefined, (draft) => {
-      const channel = draft.find((item) => item.id === event.id);
-      channel.name = event.name;
-      if (channel) { channel.name = event.name; }
-    }));
-  };
-
-  const listenerNewMessage = (event) => {
-    store.dispatch(messagesApi.util.updateQueryData('getMessages', undefined, (draft) => {
-      draft.push(event);
-    }));
-  };
-
-  socket.on('newChannel', listenerAddChannel);
-  socket.on('removeChannel', listenerDeleteChannel);
-  socket.on('renameChannel', listenerEditChannel);
-  socket.on('newMessage', listenerNewMessage);
+const listenerAddChannel = (event) => {
+  store.dispatch(channelsApi.util.updateQueryData('getChannels', undefined, (draft) => {
+    draft.push(event);
+  }));
 };
 
-export default initializeSocket;
+const listenerDeleteChannel = (event) => {
+  store.dispatch(channelsApi.util.updateQueryData('getChannels', undefined, (draft) => {
+    const index = draft.findIndex((item) => item.id === event.id);
+    if (index !== -1) { draft.splice(index, 1); }
+    const activeChannel = getCurrentActiveChannel(store.getState());
+    if (event.id === activeChannel.id) {
+      const defaultChannel = getCurrentDefaultChannel(store.getState());
+      store.dispatch(setActiveChannel(defaultChannel));
+    }
+  }));
+};
+
+const listenerEditChannel = (event) => {
+  store.dispatch(channelsApi.util.updateQueryData('getChannels', undefined, (draft) => {
+    const channel = draft.find((item) => item.id === event.id);
+    channel.name = event.name;
+    if (channel) { channel.name = event.name; }
+  }));
+};
+
+const listenerNewMessage = (event) => {
+  store.dispatch(messagesApi.util.updateQueryData('getMessages', undefined, (draft) => {
+    draft.push(event);
+  }));
+};
+
+socket.on('newChannel', listenerAddChannel);
+socket.on('removeChannel', listenerDeleteChannel);
+socket.on('renameChannel', listenerEditChannel);
+socket.on('newMessage', listenerNewMessage);
+
+export default socket;
