@@ -8,7 +8,7 @@ const routes = {
   root: () => '/',
   loginPage: () => '/login',
   signupPage: () => '/signup',
-  errorPage: () => '*',
+  notFoundPage: () => '*',
 };
 
 export default routes;

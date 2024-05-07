@@ -88,7 +88,7 @@ const App = () => {
                     />
                     <Route path={routes.loginPage()} element={<Login />} />
                     <Route path={routes.signupPage()} element={<Signup />} />
-                    <Route path={routes.errorPage()} element={<Error />} />
+                    <Route path={routes.notFoundPage()} element={<Error />} />
                   </Route>
                 </Routes>
               </div>
