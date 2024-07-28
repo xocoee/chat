@@ -17,5 +17,5 @@ make install
 make start
 ```
 
-## Demonstration
+## Demonstration:
 ![Screenshot](image/image.png)
