@@ -14,6 +14,7 @@ const ua = {
         message_one: '{{count}} повідомлення',
         message_few: '{{count}} повідомлення',
         message_many: '{{count}} повідомлень',
+        message_other: '{{count}} повідомлень',
       },
     },
 

@@ -10,8 +10,8 @@ const en = {
       send: 'Send',
       errorSendMessage: 'Error sending message',
       messageCount: {
-        message: '{{count}} message',
-        messages: '{{count}} messages',
+        message_one: '{{count}} message',
+        message_other: '{{count}} messages',
       },
     },
 
