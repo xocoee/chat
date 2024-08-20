@@ -24,7 +24,7 @@ const Header = () => {
     <div className="d-flex flex-column h-100">
       <Navbar bg="white" expand="lg" className="shadow-sm">
         <Container>
-          <ButtonGroup>
+          <ButtonGroup className="shadow-sm">
             <Button
               variant={i18n.language === 'ua' ? 'primary' : 'light'}
               onClick={() => changeLanguage('ua')}
@@ -38,7 +38,7 @@ const Header = () => {
               EN
             </Button>
           </ButtonGroup>
-          <Navbar.Brand className="col-1" as={Link} to={routes.root()}>{t('header.nameChat')}</Navbar.Brand>
+          <Navbar.Brand className="me-auto ms-3" as={Link} to={routes.root()}>{t('header.nameChat')}</Navbar.Brand>
           {username && <Button onClick={logOut}>{t('header.exit')}</Button>}
         </Container>
       </Navbar>
